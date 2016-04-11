@@ -39,8 +39,6 @@ import org.springframework.batch.repeat.RepeatStatus;
  */
 public class HelloSimpleBatchTasklet implements Tasklet, StepExecutionListener {
 
-	private volatile AtomicInteger counter = new AtomicInteger(0);
-
 	/**
 	 *
 	 */
@@ -71,6 +69,7 @@ public class HelloSimpleBatchTasklet implements Tasklet, StepExecutionListener {
 						jobParameterEntry.getValue().getValue()));
 
 				if (jobParameterEntry.getKey().startsWith("context")) {
+					System.out.println(String.format("Adding parameter '%s' to stepExecutionContext.", jobParameterEntry.getKey()));
 					stepExecutionContext.put(jobParameterEntry.getKey(), jobParameterEntry.getValue().getValue());
 				}
 			}
@@ -78,11 +77,22 @@ public class HelloSimpleBatchTasklet implements Tasklet, StepExecutionListener {
 			if (jobParameters.getString("throwError") != null
 					&& Boolean.TRUE.toString().equalsIgnoreCase(jobParameters.getString("throwError"))) {
 
-				if (this.counter.compareAndSet(3, 0)) {
-					System.out.println("Counter reset to 0. Execution will succeed.");
+				final AtomicInteger executionCounter;
+
+				if (stepExecutionContext.containsKey("executionCounter")) {
+					executionCounter = new AtomicInteger(stepExecutionContext.getInt("executionCounter"));
+					executionCounter.incrementAndGet();
 				}
 				else {
-					this.counter.incrementAndGet();
+					executionCounter = new AtomicInteger(1);
+				}
+
+				if (executionCounter.compareAndSet(3, 0)) {
+					stepExecutionContext.putInt("executionCounter", executionCounter.get());
+					System.out.println("Counter reset to " + executionCounter.get() +" . Execution will succeed.");
+				}
+				else {
+					stepExecutionContext.putInt("executionCounter", executionCounter.get());
 					throw new IllegalStateException("Exception triggered by user.");
 				}
 

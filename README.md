@@ -162,12 +162,21 @@ dataflow:>job execution view --id 2
 ╚═════════════════════╧════════════════════════════╝
 ```
 
+## Custom Initialization Parameters
+
+In order to demo various aspects of Batch Jobs, you can set the following sample-specific Boot
+parameters:
+
+* `sample.jobName` (default if not set: `job` + random numeric value)
+* `sample.jobParams` (optional)
+* `sample.makeParametersUnique` (defaults to `true`)
+
 ## Provide Custom Job Parameters
 
 You can also experiment with Job parameters:
 
 ```
-dataflow:>task launch scdf-batch-simple --properties jobParams={"myStringParameter":"foobar","-secondParam(long)":"123456"}
+dataflow:>task launch scdf-batch-simple --properties sample.jobParams={"myStringParameter":"foobar","-secondParam(long)":"123456"}
 ```
 
 ## Throwing Exceptions
@@ -175,8 +184,20 @@ dataflow:>task launch scdf-batch-simple --properties jobParams={"myStringParamet
 You can trigger an exception by providing a parameter named `throwError` with a String value of `true`.
 
 ```
-dataflow:>task launch scdf-batch-simple --properties jobParams={"throwError":"true"}
+dataflow:>task launch scdf-batch-simple --properties sample.jobParams={"throwError":"true"}
 ```
+
+## Simulate Restarts that eventually succeed
+
+This demo requires you to run Batch using a dedicated datasource.
+
+Start the job with the following parameters:
+
+```
+dataflow:>task launch scdf-batch-simple --properties sample.jobParams={"throwError":"true"}, sample.jobName=SucceedsAfter3Times, sample.makeParametersUnique=false
+```
+
+After the 3rd run, the job will succeed.
 
 ## Adding Variables to the Step Execution Context
 
@@ -187,7 +208,7 @@ verify the context using the **Admin UI** and drilling to the Step Execution Det
 via the *Executions* tab.
 
 ```
-dataflow:>task launch scdf-batch-simple --properties jobParams={"contextHello":"Hallo Berlin!"}
+dataflow:>task launch scdf-batch-simple --properties sample.jobParams={"contextHello":"Hallo Berlin!"}
 ```
 ## Using the UI
 

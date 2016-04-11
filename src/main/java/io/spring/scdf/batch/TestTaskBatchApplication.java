@@ -19,8 +19,11 @@ public class TestTaskBatchApplication {
 	@Autowired
 	private JobExplorer jobExplorer;
 
-	@Value("${jobParams:null}")
+	@Value("${sample.jobParams:null}")
 	private String additionalJobParams;
+
+	@Value("${sample.makeParametersUnique:true}")
+	private boolean makeParametersUnique;
 
 	public static void main(String[] args) {
 		SpringApplication.run(TestTaskBatchApplication.class, args);
@@ -28,6 +31,6 @@ public class TestTaskBatchApplication {
 
 	@Bean
 	public MyJobLauncherCommandLineRunner commandLineRunner() {
-		return new MyJobLauncherCommandLineRunner(jobLauncher, jobExplorer, additionalJobParams);
+		return new MyJobLauncherCommandLineRunner(jobLauncher, jobExplorer, additionalJobParams, makeParametersUnique);
 	}
 }

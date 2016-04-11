@@ -12,9 +12,10 @@ public class MyJobLauncherCommandLineRunner extends JobLauncherCommandLineRunner
 	final Properties additionalJobParams;
 
 	public MyJobLauncherCommandLineRunner(JobLauncher jobLauncher,
-			JobExplorer jobExplorer, String additionalJobParamsAsString) {
+			JobExplorer jobExplorer, String additionalJobParamsAsString, boolean makeParametersUnique) {
 		super(jobLauncher, jobExplorer);
 		ExpandedJobParametersConverter converter = new ExpandedJobParametersConverter();
+		converter.setMakeParametersUnique(makeParametersUnique);
 		additionalJobParams = converter.getJobParametersForJsonString(additionalJobParamsAsString).toProperties();
 	}
 
@@ -30,7 +31,6 @@ public class MyJobLauncherCommandLineRunner extends JobLauncherCommandLineRunner
 			propertiesToUse = properties;
 		}
 
-		System.out.println(">>>>>>>>>>>>>>>>Adding Custom Job Parameters");
 		propertiesToUse.putAll(additionalJobParams);
 
 		super.launchJobFromProperties(propertiesToUse);
