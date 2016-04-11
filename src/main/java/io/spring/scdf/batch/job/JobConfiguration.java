@@ -43,7 +43,7 @@ public class JobConfiguration {
 	@Autowired
 	private StepBuilderFactory stepBuilderFactory;
 
-	@Value("${sample.jobName}")
+	@Value("${sample.jobName:}")
 	private String jobName;
 
 	@Bean
@@ -58,6 +58,8 @@ public class JobConfiguration {
 			Random rand = new Random();
 			jobNameToUse = "job" + rand.nextInt();
 		}
+
+		System.out.println("Setting up new Batch Job named: " + jobNameToUse);
 
 		return jobBuilderFactory.get(jobNameToUse)
 				.start(stepBuilderFactory.get("step1").tasklet(new HelloSimpleBatchTasklet()).build())
